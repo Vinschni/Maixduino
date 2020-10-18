@@ -54,8 +54,10 @@ public:
     virtual uint8_t* snapshot();
     virtual uint16_t* getRGB565(){ return (uint16_t*)_dataBuffer; };
     virtual uint8_t* getRGB888(){ return _aiBuffer; };
-    virtual void setRotation(uint8_t rotation);
+    virtual void setRotaion(uint8_t rotation);
     virtual void setInvert(bool invert);
+    virtual int sensor_snapshot_start();
+    virtual int sensor_snapshot_finalize();
 
 private:
     uint8_t* _dataBuffer;    // put RGB565 data

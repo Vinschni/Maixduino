@@ -603,7 +603,7 @@ _resetPoliraty(ACTIVE_HIGH), _pwdnPoliraty(ACTIVE_HIGH),
 _slaveAddr(0x00),
 _id(0)
 {
-    configASSERT(pixFormat == PIXFORMAT_RGB565 || pixFormat==PIXFORMAT_YUV422);
+    configASSERT(pixFormat == PIXFORMAT_RGB565 || pixFormat==PIXFORMAT_YUV422 || pixFormat==PIXFORMAT_GRAYSCALE);
 }
 
 
@@ -615,7 +615,7 @@ _resetPoliraty(ACTIVE_HIGH), _pwdnPoliraty(ACTIVE_HIGH),
 _slaveAddr(0x00),
 _id(0)
 {
-    configASSERT(pixFormat == PIXFORMAT_RGB565 || pixFormat==PIXFORMAT_YUV422);
+    configASSERT(pixFormat == PIXFORMAT_RGB565 || pixFormat==PIXFORMAT_YUV422 || pixFormat==PIXFORMAT_GRAYSCALE);
 }
 
 
@@ -739,7 +739,7 @@ void Sipeed_OV2640::setInvert(bool invert)
 int Sipeed_OV2640::dvpInit(uint32_t freq)
 {
     // just support RGB565 and YUV442 on k210
-    configASSERT(_pixFormat==PIXFORMAT_RGB565 || _pixFormat==PIXFORMAT_YUV422);
+    configASSERT(_pixFormat==PIXFORMAT_RGB565 || _pixFormat==PIXFORMAT_YUV422 || _pixFormat==PIXFORMAT_GRAYSCALE);
     _freq  = freq;
 
 	fpioa_set_function(47, FUNC_CMOS_PCLK);
@@ -769,8 +769,13 @@ int Sipeed_OV2640::dvpInit(uint32_t freq)
 	dvp_set_output_enable(DVP_OUTPUT_DISPLAY, 1);	//enable to lcd
     if( _pixFormat == PIXFORMAT_YUV422)
         dvp_set_image_format(DVP_CFG_YUV_FORMAT);
-    else
+    else if (_pixFormat == PIXFORMAT_RGB565)
 	    dvp_set_image_format(DVP_CFG_RGB_FORMAT);
+    else if (_pixFormat == PIXFORMAT_GRAYSCALE) {
+        dvp_set_image_format(DVP_CFG_Y_FORMAT);
+    } else {
+        return -1;
+    }
 	dvp_set_image_size(_width, _height);	//set QVGA default
 	dvp_set_ai_addr( (uint32_t)((long)_aiBuffer), (uint32_t)((long)(_aiBuffer+_width*_height)), (uint32_t)((long)(_aiBuffer+_width*_height*2)));
 	dvp_set_display_addr( (uint32_t)((long)_dataBuffer) );
@@ -1522,7 +1527,7 @@ int Sipeed_OV2640::sensor_snapshot_finalize( )
         if(millis() - start > 300)//wait for 300ms
             return -1;
     }
-	// Reversing Pixel only required to display on lcd
+    // Reversing Pixel only required to display on lcd
     //reverse_u32pixel((uint32_t*)_dataBuffer, _width*_height/2); //Vinschni: not required
     return 0;
 }

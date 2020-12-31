@@ -189,7 +189,7 @@ void lcd_fill_rectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint
 {
     uint32_t data = ((uint32_t)color << 16) | (uint32_t)color;
     lcd_set_area(x1, y1, x2, y2);
-    tft_fill_data(&data, (y2+1-y1)*(x2+1-x1) );
+    tft_fill_data(&data, (y2 + 1 - y1) * (x2 + 1 - x1));
 }
 
 void lcd_draw_rectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t width, uint16_t color)
@@ -226,7 +226,7 @@ void lcd_draw_picture(uint16_t x1, uint16_t y1, uint16_t width, uint16_t height,
         g_lcd_display_buff[i + 1] = SWAP_16(*(p));
         p += 2;
     }
-    tft_write_word((uint32_t*)g_lcd_display_buff, width * height / 2);
+    tft_write_word((uint32_t *)g_lcd_display_buff, width * height / 2);
 }
 
 //draw pic's roi on (x,y)
@@ -244,20 +244,17 @@ void lcd_draw_pic_roi(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t r
     return;
 }
 
-static uint16_t line_buf[320]; //TODO: optimize
 void lcd_draw_pic_gray(uint16_t x1, uint16_t y1, uint16_t width, uint16_t height, uint8_t *ptr)
 {
-    int x, y;
-    for (y = 0; y < height; y++)
+    uint32_t i;
+    lcd_set_area(x1, y1, x1 + width - 1, y1 + height - 1);
+    uint32_t size = width * height;
+    for (i = 0; i < size; i += 2)
     {
-        for (x = 0; x < width; x++)
-        {
-            line_buf[x] = gray2rgb565[(ptr[y * width + x]) >> 2];
-        }
-        lcd_set_area(x1, y1 + y, x1 + width - 1, y1 + y);
-        tft_write_byte((uint8_t*)line_buf, width * 2);
+        g_lcd_display_buff[i] = gray2rgb565[ptr[i + 1] >> 2];
+        g_lcd_display_buff[i + 1] = gray2rgb565[ptr[i] >> 2];
     }
-    return;
+    tft_write_word((uint32_t *)g_lcd_display_buff, width * height / 2);
 }
 
 void lcd_draw_pic_grayroi(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t rx, uint16_t ry, uint16_t rw, uint16_t rh, uint8_t *ptr)

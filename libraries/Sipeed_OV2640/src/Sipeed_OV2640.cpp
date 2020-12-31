@@ -1528,7 +1528,7 @@ int Sipeed_OV2640::sensor_snapshot_finalize( )
             return -1;
     }
     // Reversing Pixel only required to display on lcd
-    //reverse_u32pixel((uint32_t*)_dataBuffer, _width*_height/2); //Vinschni: not required
+    reverse_u32pixel((uint32_t*)_dataBuffer, _width*_height/2); //Vinschni: not required
     return 0;
 }
 

@@ -1518,18 +1518,18 @@ int Sipeed_OV2640::sensor_snapshot_start( )
     return 0;
 }
 
-int Sipeed_OV2640::sensor_snapshot_finalize( )
+uint8_t* Sipeed_OV2640::sensor_snapshot_finalize( )
 {	
     uint32_t start =  millis();
     while (g_dvp_finish_flag == 0)
     {
         usleep(50);
         if(millis() - start > 300)//wait for 300ms
-            return -1;
+            return 0;
     }
     // Reversing Pixel only required to display on lcd
-    reverse_u32pixel((uint32_t*)_dataBuffer, _width*_height/2); //Vinschni: not required
-    return 0;
+    //reverse_u32pixel((uint32_t*)_dataBuffer, _width*_height/2); //Vinschni: not required
+    return _dataBuffer;
 }
 
 int Sipeed_OV2640::sensor_snapshot( )
@@ -1543,7 +1543,7 @@ int Sipeed_OV2640::sensor_snapshot( )
         if(millis() - start > 300)//wait for 300ms
             return -1;
     }
-    reverse_u32pixel((uint32_t*)_dataBuffer, _width*_height/2);
+    //reverse_u32pixel((uint32_t*)_dataBuffer, _width*_height/2);
     return 0;
 }
 

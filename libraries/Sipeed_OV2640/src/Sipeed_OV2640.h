@@ -57,7 +57,11 @@ public:
     virtual void setRotation(uint8_t rotation);
     virtual void setInvert(bool invert);
     virtual int sensor_snapshot_start();
-    virtual int sensor_snapshot_finalize();
+    /**
+     * @return pixels 
+     *         If pixels format is RGB565: Returns big endian packed RGB565
+     */
+    virtual uint8_t* sensor_snapshot_finalize();
 
 private:
     uint8_t* _dataBuffer;    // put RGB565 data
